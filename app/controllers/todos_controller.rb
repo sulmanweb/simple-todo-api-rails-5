@@ -4,7 +4,7 @@ class TodosController < ApplicationController
   # GET /todos
   # GET /todos.json
   def index
-    @todos = Todo.all
+    @todos = Todo.all.order('id DESC')
   end
 
   # GET /todos/1
@@ -48,6 +48,6 @@ class TodosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def todo_params
-      params.permit(:name)
+      params.permit(:name, :done)
     end
 end
