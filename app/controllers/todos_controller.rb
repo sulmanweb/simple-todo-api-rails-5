@@ -1,10 +1,11 @@
 class TodosController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_todo, only: [:show, :update, :destroy]
 
   # GET /todos
   # GET /todos.json
   def index
-    @todos = Todo.all.order('id DESC')
+    @todos = current_user.todos.all.order('id DESC')
   end
 
   # GET /todos/1
@@ -16,6 +17,7 @@ class TodosController < ApplicationController
   # POST /todos.json
   def create
     @todo = Todo.new(todo_params)
+    @todo.user = current_user
 
     if @todo.save
       render :show, status: :created, location: @todo
@@ -27,7 +29,7 @@ class TodosController < ApplicationController
   # PATCH/PUT /todos/1
   # PATCH/PUT /todos/1.json
   def update
-    if @todo.update(todo_params)
+    if current_user == @todo.user and @todo.update(todo_params)
       render :show, status: :ok, location: @todo
     else
       render json: @todo.errors, status: :unprocessable_entity
@@ -37,7 +39,9 @@ class TodosController < ApplicationController
   # DELETE /todos/1
   # DELETE /todos/1.json
   def destroy
-    @todo.destroy
+    if current_user == @todo.user
+      @todo.destroy
+    end
   end
 
   private
